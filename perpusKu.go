@@ -95,7 +95,18 @@ func tambahBuku(arr *tabBuku, n *int) {
 }
 
 func tampilkanSemuaBuku(arr *tabBuku, n *int) {
+	var i int
+	var buku Buku
+	if *n == 0 {
+		fmt.Println("Koleksi anda masih kosong")
+		return
+	}
 
+	fmt.Println("\n-----DAFTAR KOLEKSI BUKU -----")
+	for i=0; i < *n; i++ {
+		buku = arr[i]
+		fmt.Printf("[%d] ID: %s | Judul: %s | Penulis: %s | Kategori: %s | Tahun: %d | Status: %s\n",i + 1, buku.id, buku.judul, buku.penulis, buku.kategori, buku.tahunTerbit, buku.tersedia)
+	}
 }
 
 func ubahBuku() {
