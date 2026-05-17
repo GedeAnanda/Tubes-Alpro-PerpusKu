@@ -10,8 +10,7 @@ type Buku struct {
 	kategori string
 	penulis string
 	tahunTerbit int
-	status string 
-	tersedia bool
+	status bool 
 }
 
 type tabBuku [NMAX] Buku
@@ -87,7 +86,7 @@ func tambahBuku(arr *tabBuku, n *int) {
 	fmt.Scan(&buku.kategori)
 	fmt.Print("Tahun Terbit: ")
 	fmt.Scan(&buku.tahunTerbit)
-	buku.tersedia = true
+	buku.status = true
 
 	arr[*n] = buku
 	*n++
@@ -105,16 +104,74 @@ func tampilkanSemuaBuku(arr *tabBuku, n *int) {
 	fmt.Println("\n-----DAFTAR KOLEKSI BUKU -----")
 	for i=0; i < *n; i++ {
 		buku = arr[i]
-		fmt.Printf("[%d] ID: %s | Judul: %s | Penulis: %s | Kategori: %s | Tahun: %d | Status: %s\n",i + 1, buku.id, buku.judul, buku.penulis, buku.kategori, buku.tahunTerbit, buku.tersedia)
+		fmt.Printf("[%d] ID: %s | Judul: %s | Penulis: %s | Kategori: %s | Tahun: %d | Status: %s\n",i + 1, buku.id, buku.judul, buku.penulis, buku.kategori, buku.tahunTerbit, buku.status)
 	}
 }
 
-func ubahBuku() {
+func ubahBuku(arr *tabBuku, n *int) {
+	var id string
+	var idx,i int
+	var buku Buku
+	idx = -1
 
+	fmt.Println("Masukkan ID buku yang ingin anda edit: ")
+	fmt.Scan(&id)
+
+	for i = 0; i < *n; i++{
+		if arr[i].id == id {
+			idx = i 
+			break	
+		}
+	}
+	
+	if idx == -1 {
+		fmt.Println("Buku tidak ditemukan")
+		return
+	}
+	fmt.Printf("Data Buku : Judul: %s | Penulis: %s | Kategori: %s | Tahun: %d | Status: %s\n", arr[idx].judul, arr[idx].penulis, arr[idx].kategori, arr[idx].tahunTerbit, arr[idx].status)
+
+	buku.id = id
+	fmt.Print("Judul         :")
+	fmt.Scan(&buku.judul)
+	fmt.Print("Penulis       :")
+	fmt.Scan(&buku.penulis)
+	fmt.Print("Kategori   	 :")
+	fmt.Scan(&buku.kategori)
+	fmt.Print("Tahun Terbit  :")
+	fmt.Scan(&buku.tahunTerbit)
+	fmt.Print("Status Baru   :")
+	fmt.Scan(&buku.status)
 }	
 
-func hapusBuku() {
+func hapusBuku(arr *tabBuku, n *int) {
+	var id string
+	var idx,i int
+	idx= -1
+	
+	fmt.Print("Masukkan ID Buku yang ingin dihapus: ")
+	fmt.Scan(&id)
 
+	for i = 0; i < *n; i++ {
+		if arr[i].id == id {
+			idx = i 
+			break
+		}
+	}
+
+
+	if idx == -1 {
+		fmt.Println("Buku tidak ditemukan")
+		return
+	}
+
+	fmt.Printf("Menghapus -> ID: %s  | Judul:%s  | Penulis: %s.  | Tahun Terbit: %d\n", arr[idx].id, arr[idx].judul, arr[idx].penulis, arr[idx].tahunTerbit)
+
+	for i = idx; i < *n - 1; i++ {
+		arr[i] = arr[i+1]
+	}
+	*n--
+	fmt.Println("Buku Berhasil Dihapus")
+	
 }
 
 func searchJudul() {
