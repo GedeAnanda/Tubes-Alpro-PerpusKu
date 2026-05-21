@@ -203,6 +203,7 @@ func searchId(koleksi *tabBuku, jumlahBuku *int) {
 	var kiri, kanan, mid int
 	fmt.Print("Masukkan ID Buku: ")
 	fmt.Scan(&find)
+	sortById(koleksi, jumlahBuku)
 
 	kiri= 0
 	kanan = *jumlahBuku - 1
@@ -231,6 +232,26 @@ func searchId(koleksi *tabBuku, jumlahBuku *int) {
 
 }
 
+func sortById(koleksi *tabBuku, jumlahBuku *int) {
+    var i, minIdx, N int
+    var temp Buku
+
+    for N = 0; N < *jumlahBuku-1; N++ {
+        minIdx = N
+        for i = N + 1; i < *jumlahBuku; i++ {
+            if koleksi[i].id < koleksi[minIdx].id {
+                minIdx = i
+            }
+        }
+        if minIdx != N {
+            temp = koleksi[minIdx]
+            koleksi[minIdx] = koleksi[N]
+            koleksi[N] = temp
+        }
+    }
+}
+
+
 func selectionSortTahunTerbit(koleksi *tabBuku, jumlahBuku *int) {
 	var i, minIdx, N int
 	var temp Buku 
@@ -248,6 +269,8 @@ func selectionSortTahunTerbit(koleksi *tabBuku, jumlahBuku *int) {
 			koleksi[N] = temp
 		}
 	}
+	 fmt.Println("Data Berhasil Diurutkan (Ascending)")
+    tampilkanSemuaBuku(koleksi, jumlahBuku)
 }
 
 func insertionSortTahunTerbit(koleksi *tabBuku, jumlahBuku *int) {
