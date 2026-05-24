@@ -1,6 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"os/exec"
+	"runtime"
+	"strconv"
+	"strings"
+)
 
 const NMAX = 100
 
@@ -15,28 +23,54 @@ type Buku struct {
 
 type tabBuku [NMAX]Buku
 
+var reader = bufio.NewReader(os.Stdin)
+
+func bacaInput() string {
+	text, _ := reader.ReadString('\n')
+	return strings.TrimSpace(text)
+}
+
+func bacaInt() int {
+	text := bacaInput()
+	num, _ := strconv.Atoi(text)
+	return num
+}
+
+func clearScreen() {
+	if runtime.GOOS == "windows" {
+		cmd := exec.Command("cmd", "/c", "cls")
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	} else {
+		cmd := exec.Command("clear")
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	}
+}
+
 func main() {
 	var koleksi tabBuku
 	var jumlahBuku int = 0
 	var pilih int
-	jumlahBuku = 0
 
 	for {
-		fmt.Println("--------------------------")
-		fmt.Println("SiPerpus - Katalog Digital")
-		fmt.Println("--------------------------")
-		fmt.Println("1. Tambah Buku")
-		fmt.Println("2. Tampilkan Semua Buku")
-		fmt.Println("3. Ubah Data Buku")
-		fmt.Println("4. Hapus Buku")
-		fmt.Println("5. Cari Buku Berdasarkan Judul")
-		fmt.Println("6. Cari Buku Berdasarkan ID")
-		fmt.Println("7. Urutan Tahun Terbit - Ascending - Seletion Sort")
-		fmt.Println("8. Urutan Tahun Terbit - Descending - Insertion Sort")
-		fmt.Println("9. Tampilkan Statistik")
-		fmt.Println("0. Keluar Aplikasi")
-		fmt.Print("Pilih menu: ")
-		fmt.Scan(&pilih)
+		clearScreen()
+		fmt.Println("╔══════════════════════════════════╗")
+		fmt.Println("║  SiPerpus - Katalog Digital      ║")
+		fmt.Println("╠══════════════════════════════════╣")
+		fmt.Println("║  1. Tambah Buku                  ║")
+		fmt.Println("║  2. Tampilkan Semua Buku         ║")
+		fmt.Println("║  3. Ubah Data Buku               ║")
+		fmt.Println("║  4. Hapus Buku                   ║")
+		fmt.Println("║  5. Cari Buku - Judul            ║")
+		fmt.Println("║  6. Cari Buku - ID               ║")
+		fmt.Println("║  7. Urutkan Tahun: 2000 -> 2024  ║")
+		fmt.Println("║  8. Urutkan Tahun: 2024 -> 2000  ║")
+		fmt.Println("║  9. Statistik                    ║")
+		fmt.Println("║  0. Keluar                       ║")
+		fmt.Println("╚══════════════════════════════════╝")
+		fmt.Print("  Pilih menu: ")
+		pilih = bacaInt()
 
 		switch pilih {
 		case 1:
@@ -58,52 +92,88 @@ func main() {
 		case 9:
 			statistik(&koleksi, &jumlahBuku)
 		case 0:
-			fmt.Println("Terima kasih sudah menggunakan perpusKu")
+			clearScreen()
+			fmt.Println("╔══════════════════════════════════╗")
+			fmt.Println("║    Terima kasih - SiPerpus!      ║")
+			fmt.Println("╚══════════════════════════════════╝")
+			fmt.Println()
 			return
 		default:
-			fmt.Println("Pilihan tidak valid!")
+			fmt.Println()
+			fmt.Println("  Pilihan tidak valid!")
+			fmt.Println()
 		}
 	}
-
 }
 
 func tambahBuku(koleksi *tabBuku, jumlahBuku *int) {
 	if *jumlahBuku >= NMAX {
-		fmt.Println("Maaf, Kapasitas Perpustakaan Penuh")
+		fmt.Println("╔══════════════════════════════════╗")
+		fmt.Println("║   Kapasitas Perpustakaan Penuh   ║")
+		fmt.Println("╚══════════════════════════════════╝")
+		fmt.Print("  Tekan Enter untuk kembali ke menu...")
+		bacaInput()
 		return
 	}
 	var buku Buku
-	fmt.Println("--- Tambah Buku Baru ---")
-	fmt.Print("ID Buku      : ")
-	fmt.Scan(&buku.id)
-	fmt.Print("Judul        : ")
-	fmt.Scan(&buku.judul)
-	fmt.Print("Penulis      : ")
-	fmt.Scan(&buku.penulis)
-	fmt.Print("Kategori     : ")
-	fmt.Scan(&buku.kategori)
-	fmt.Print("Tahun Terbit : ")
-	fmt.Scan(&buku.tahunTerbit)
+	fmt.Println("╔══════════════════════════════════╗")
+	fmt.Println("║        Tambah Buku Baru          ║")
+	fmt.Println("╚══════════════════════════════════╝")
+	fmt.Print("  ID Buku      : ")
+	buku.id = bacaInput()
+	fmt.Print("  Judul        : ")
+	buku.judul = bacaInput()
+	fmt.Print("  Penulis      : ")
+	buku.penulis = bacaInput()
+	fmt.Print("  Kategori     : ")
+	buku.kategori = bacaInput()
+	fmt.Print("  Tahun Terbit : ")
+	buku.tahunTerbit = bacaInt()
 	buku.status = "Tersedia"
 
 	koleksi[*jumlahBuku] = buku
 	*jumlahBuku++
-	fmt.Println("Data buku berhasil ditambahkan")
+	fmt.Println()
+	fmt.Println("  Buku berhasil ditambahkan!")
+	fmt.Println()
+	fmt.Print("  Tekan Enter untuk kembali ke menu...")
+	bacaInput()
 }
 
 func tampilkanSemuaBuku(koleksi *tabBuku, jumlahBuku *int) {
 	var i int
 	var buku Buku
+
 	if *jumlahBuku == 0 {
-		fmt.Println("Koleksi anda masih kosong")
+		fmt.Println("╔══════════════════════════════════╗")
+		fmt.Println("║       Koleksi Masih Kosong       ║")
+		fmt.Println("╚══════════════════════════════════╝")
+		fmt.Print("  Tekan Enter untuk kembali ke menu...")
+		bacaInput()
 		return
 	}
 
-	fmt.Println("----DAFTAR KOLEKSI BUKU -----")
+	fmt.Println("╔══════════════════════════════════╗")
+	fmt.Println("║       Daftar Koleksi Buku        ║")
+	fmt.Println("╚══════════════════════════════════╝")
+	fmt.Printf("  Total: %d buku\n\n", *jumlahBuku)
+
 	for i = 0; i < *jumlahBuku; i++ {
 		buku = koleksi[i]
-		fmt.Printf("[%d] ID: %s | Judul: %s | Penulis: %s | Kategori: %s | Tahun: %d | Status: %s\n", i+1, buku.id, buku.judul, buku.penulis, buku.kategori, buku.tahunTerbit, buku.status)
+		fmt.Println("  +----------------------------------+")
+		fmt.Printf("  | No      : %-22d |\n", i+1)
+		fmt.Println("  +----------------------------------+")
+		fmt.Printf("  | ID      : %-22s |\n", buku.id)
+		fmt.Printf("  | Judul   : %-22s |\n", buku.judul)
+		fmt.Printf("  | Penulis : %-22s |\n", buku.penulis)
+		fmt.Printf("  | Kategori: %-22s |\n", buku.kategori)
+		fmt.Printf("  | Tahun   : %-22d |\n", buku.tahunTerbit)
+		fmt.Printf("  | Status  : %-22s |\n", buku.status)
+		fmt.Println("  +----------------------------------+")
+		fmt.Println()
 	}
+	fmt.Print("  Tekan Enter untuk kembali ke menu...")
+	bacaInput()
 }
 
 func ubahBuku(koleksi *tabBuku, jumlahBuku *int) {
@@ -112,8 +182,11 @@ func ubahBuku(koleksi *tabBuku, jumlahBuku *int) {
 	var buku Buku
 	idx = -1
 
-	fmt.Println("Masukkan ID buku yang ingin anda edit: ")
-	fmt.Scan(&id)
+	fmt.Println("╔══════════════════════════════════╗")
+	fmt.Println("║         Ubah Data Buku           ║")
+	fmt.Println("╚══════════════════════════════════╝")
+	fmt.Print("  Masukkan ID Buku: ")
+	id = bacaInput()
 
 	for i = 0; i < *jumlahBuku; i++ {
 		if koleksi[i].id == id {
@@ -123,24 +196,46 @@ func ubahBuku(koleksi *tabBuku, jumlahBuku *int) {
 	}
 
 	if idx == -1 {
-		fmt.Println("Buku tidak ditemukan")
+		fmt.Println()
+		fmt.Println("  Buku tidak ditemukan!")
+		fmt.Println()
+		fmt.Print("  Tekan Enter untuk kembali ke menu...")
+		bacaInput()
 		return
 	}
-	fmt.Printf("Data Buku : Judul: %s | Penulis: %s | Kategori: %s | Tahun: %d | Status: %s\n", koleksi[idx].judul, koleksi[idx].penulis, koleksi[idx].kategori, koleksi[idx].tahunTerbit, koleksi[idx].status)
+
+	fmt.Println()
+	fmt.Println("  +----------------------------------+")
+	fmt.Println("  |          Data Lama               |")
+	fmt.Println("  +----------------------------------+")
+	fmt.Printf("  | ID      : %-22s |\n", koleksi[idx].id)
+	fmt.Printf("  | Judul   : %-22s |\n", koleksi[idx].judul)
+	fmt.Printf("  | Penulis : %-22s |\n", koleksi[idx].penulis)
+	fmt.Printf("  | Kategori: %-22s |\n", koleksi[idx].kategori)
+	fmt.Printf("  | Tahun   : %-22d |\n", koleksi[idx].tahunTerbit)
+	fmt.Printf("  | Status  : %-22s |\n", koleksi[idx].status)
+	fmt.Println("  +----------------------------------+")
+	fmt.Println()
+	fmt.Println("  Masukkan Data Baru:")
 
 	buku.id = id
-	fmt.Print("Judul         :")
-	fmt.Scan(&buku.judul)
-	fmt.Print("Penulis       :")
-	fmt.Scan(&buku.penulis)
-	fmt.Print("Kategori   	 :")
-	fmt.Scan(&buku.kategori)
-	fmt.Print("Tahun Terbit  :")
-	fmt.Scan(&buku.tahunTerbit)
-	fmt.Print("Status (Tersedia/Tidak_Tersedia): ")
-	fmt.Scan(&buku.status)
+	fmt.Print("  Judul        : ")
+	buku.judul = bacaInput()
+	fmt.Print("  Penulis      : ")
+	buku.penulis = bacaInput()
+	fmt.Print("  Kategori     : ")
+	buku.kategori = bacaInput()
+	fmt.Print("  Tahun Terbit : ")
+	buku.tahunTerbit = bacaInt()
+	fmt.Print("  Status (Tersedia/Tidak_Tersedia): ")
+	buku.status = bacaInput()
+
 	koleksi[idx] = buku
-	fmt.Println("Buku Berhasil diubah")
+	fmt.Println()
+	fmt.Println("  Buku berhasil diubah!")
+	fmt.Println()
+	fmt.Print("  Tekan Enter untuk kembali ke menu...")
+	bacaInput()
 }
 
 func hapusBuku(koleksi *tabBuku, jumlahBuku *int) {
@@ -148,8 +243,11 @@ func hapusBuku(koleksi *tabBuku, jumlahBuku *int) {
 	var idx, i int
 	idx = -1
 
-	fmt.Print("Masukkan ID Buku yang ingin dihapus: ")
-	fmt.Scan(&id)
+	fmt.Println("╔══════════════════════════════════╗")
+	fmt.Println("║           Hapus Buku             ║")
+	fmt.Println("╚══════════════════════════════════╝")
+	fmt.Print("  Masukkan ID Buku: ")
+	id = bacaInput()
 
 	for i = 0; i < *jumlahBuku; i++ {
 		if koleksi[i].id == id {
@@ -159,179 +257,263 @@ func hapusBuku(koleksi *tabBuku, jumlahBuku *int) {
 	}
 
 	if idx == -1 {
-		fmt.Println("Buku tidak ditemukan")
+		fmt.Println()
+		fmt.Println("  Buku tidak ditemukan!")
+		fmt.Println()
+		fmt.Print("  Tekan Enter untuk kembali ke menu...")
+		bacaInput()
 		return
 	}
 
-	fmt.Printf("Menghapus -> ID: %s  | Judul:%s  | Penulis: %s.  | Tahun Terbit: %d\n", koleksi[idx].id, koleksi[idx].judul, koleksi[idx].penulis, koleksi[idx].tahunTerbit)
+	fmt.Println()
+	fmt.Println("  +----------------------------------+")
+	fmt.Println("  |      Buku yang akan dihapus      |")
+	fmt.Println("  +----------------------------------+")
+	fmt.Printf("  | ID      : %-22s |\n", koleksi[idx].id)
+	fmt.Printf("  | Judul   : %-22s |\n", koleksi[idx].judul)
+	fmt.Printf("  | Penulis : %-22s |\n", koleksi[idx].penulis)
+	fmt.Printf("  | Tahun   : %-22d |\n", koleksi[idx].tahunTerbit)
+	fmt.Println("  +----------------------------------+")
+	fmt.Println()
+	fmt.Print("  Konfirmasi hapus? (y/n): ")
+	var konfirmasi string
+	konfirmasi = bacaInput()
+
+	if konfirmasi != "y" {
+		fmt.Println()
+		fmt.Println("  Penghapusan dibatalkan!")
+		fmt.Println()
+		fmt.Print("  Tekan Enter untuk kembali ke menu...")
+		bacaInput()
+		return
+	}
 
 	for i = idx; i < *jumlahBuku-1; i++ {
 		koleksi[i] = koleksi[i+1]
 	}
 	*jumlahBuku--
-	fmt.Println("Buku Berhasil Dihapus")
-
+	fmt.Println()
+	fmt.Println("  Buku berhasil dihapus!")
+	fmt.Println()
+	fmt.Print("  Tekan Enter untuk kembali ke menu...")
+	bacaInput()
 }
 
 func searchJudul(koleksi *tabBuku, jumlahBuku *int) {
 	var i int
-	var ketemu bool
+	var found bool
 	var find string
-	fmt.Print("Masukkan Judul Buku: ")
-	fmt.Scan(&find)
+
+	fmt.Println("╔══════════════════════════════════╗")
+	fmt.Println("║       Cari Buku - Judul          ║")
+	fmt.Println("╚══════════════════════════════════╝")
+	fmt.Print("  Masukkan Judul Buku: ")
+	find = bacaInput()
+
 	for i = 0; i < *jumlahBuku; i++ {
 		if koleksi[i].judul == find {
-			fmt.Println("----------------------")
-			fmt.Println("    Buku Ditemukan    ")
-			fmt.Println("----------------------")
-			fmt.Printf("ID           : %s\n", koleksi[i].id)
-			fmt.Printf("Judul        : %s\n", koleksi[i].judul)
-			fmt.Printf("Kategori     : %s\n", koleksi[i].kategori)
-			fmt.Printf("Penulis      : %s\n", koleksi[i].penulis)
-			fmt.Printf("Tahun Terbit : %d\n", koleksi[i].tahunTerbit)
-			fmt.Printf("Status       : %s\n", koleksi[i].status)
-			ketemu = true
+			if !found {
+				fmt.Println()
+				fmt.Println("  +----------------------------------+")
+				fmt.Println("  |        Buku Ditemukan!           |")
+				fmt.Println("  +----------------------------------+")
+			}
+			fmt.Printf("  | ID      : %-22s |\n", koleksi[i].id)
+			fmt.Printf("  | Judul   : %-22s |\n", koleksi[i].judul)
+			fmt.Printf("  | Penulis : %-22s |\n", koleksi[i].penulis)
+			fmt.Printf("  | Kategori: %-22s |\n", koleksi[i].kategori)
+			fmt.Printf("  | Tahun   : %-22d |\n", koleksi[i].tahunTerbit)
+			fmt.Printf("  | Status  : %-22s |\n", koleksi[i].status)
+			fmt.Println("  +----------------------------------+")
+			fmt.Println()
+			found = true
 		}
 	}
-	if ketemu == false {
-		fmt.Println("Buku Tidak Ditemukan")
+
+	if !found {
+		fmt.Println()
+		fmt.Println("  Buku tidak ditemukan!")
+		fmt.Println()
 	}
+	fmt.Print("  Tekan Enter untuk kembali ke menu...")
+	bacaInput()
 }
 
 func searchId(koleksi *tabBuku, jumlahBuku *int) {
 	var find string
 	var kiri, kanan, mid int
-	fmt.Print("Masukkan ID Buku: ")
-	fmt.Scan(&find)
+
+	fmt.Println("╔══════════════════════════════════╗")
+	fmt.Println("║        Cari Buku - ID            ║")
+	fmt.Println("╚══════════════════════════════════╝")
+	fmt.Print("  Masukkan ID Buku: ")
+	find = bacaInput()
+
 	sortById(koleksi, jumlahBuku)
 
-	kiri= 0
+	kiri = 0
 	kanan = *jumlahBuku - 1
 
 	for kiri <= kanan {
 		mid = (kiri + kanan) / 2
 		if koleksi[mid].id == find {
-			fmt.Println("----------------------")
-			fmt.Println("    Buku Ditemukan    ")
-			fmt.Println("----------------------")
-			fmt.Printf("ID           : %s\n", koleksi[mid].id)
-			fmt.Printf("Judul        : %s\n", koleksi[mid].judul)
-			fmt.Printf("Kategori     : %s\n", koleksi[mid].kategori)
-			fmt.Printf("Penulis      : %s\n", koleksi[mid].penulis)
-			fmt.Printf("Tahun Terbit : %d\n", koleksi[mid].tahunTerbit)
-			fmt.Printf("Status       : %s\n", koleksi[mid].status)
+			fmt.Println()
+			fmt.Println("  +----------------------------------+")
+			fmt.Println("  |        Buku Ditemukan!           |")
+			fmt.Println("  +----------------------------------+")
+			fmt.Printf("  | ID      : %-22s |\n", koleksi[mid].id)
+			fmt.Printf("  | Judul   : %-22s |\n", koleksi[mid].judul)
+			fmt.Printf("  | Penulis : %-22s |\n", koleksi[mid].penulis)
+			fmt.Printf("  | Kategori: %-22s |\n", koleksi[mid].kategori)
+			fmt.Printf("  | Tahun   : %-22d |\n", koleksi[mid].tahunTerbit)
+			fmt.Printf("  | Status  : %-22s |\n", koleksi[mid].status)
+			fmt.Println("  +----------------------------------+")
+			fmt.Println()
+			fmt.Print("  Tekan Enter untuk kembali ke menu...")
+			bacaInput()
 			return
-		}else if find < koleksi[mid].id {
+		} else if find < koleksi[mid].id {
 			kanan = mid - 1
-		}else{
+		} else {
 			kiri = mid + 1
 		}
 	}
 
-	fmt.Println("Buku tidak ditemukan")
-
+	fmt.Println()
+	fmt.Println("  Buku tidak ditemukan!")
+	fmt.Println()
+	fmt.Print("  Tekan Enter untuk kembali ke menu...")
+	bacaInput()
 }
 
 func sortById(koleksi *tabBuku, jumlahBuku *int) {
-    var i, minIdx, N int
-    var temp Buku
+	var i, minIdx, N int
+	var temp Buku
 
-    for N = 0; N < *jumlahBuku-1; N++ {
-        minIdx = N
-        for i = N + 1; i < *jumlahBuku; i++ {
-            if koleksi[i].id < koleksi[minIdx].id {
-                minIdx = i
-            }
-        }
-        if minIdx != N {
-            temp = koleksi[minIdx]
-            koleksi[minIdx] = koleksi[N]
-            koleksi[N] = temp
-        }
-    }
+	for N = 0; N < *jumlahBuku-1; N++ {
+		minIdx = N
+		for i = N + 1; i < *jumlahBuku; i++ {
+			if koleksi[i].id < koleksi[minIdx].id {
+				minIdx = i
+			}
+		}
+		if minIdx != N {
+			temp = koleksi[minIdx]
+			koleksi[minIdx] = koleksi[N]
+			koleksi[N] = temp
+		}
+	}
 }
-
 
 func selectionSortTahunTerbit(koleksi *tabBuku, jumlahBuku *int) {
 	var i, minIdx, N int
-	var temp Buku 
+	var temp Buku
 
-	for N = 0; N < *jumlahBuku - 1; N++{ 
+	fmt.Println("╔══════════════════════════════════╗")
+	fmt.Println("║  Urutkan Tahun: 2000 -> 2024     ║")
+	fmt.Println("╚══════════════════════════════════╝")
+
+	for N = 0; N < *jumlahBuku-1; N++ {
 		minIdx = N
-		for i = N + 1; i < * jumlahBuku;i++{
+		for i = N + 1; i < *jumlahBuku; i++ {
 			if koleksi[i].tahunTerbit < koleksi[minIdx].tahunTerbit {
 				minIdx = i
 			}
 		}
 		if minIdx != N {
-			temp  = koleksi[minIdx]
+			temp = koleksi[minIdx]
 			koleksi[minIdx] = koleksi[N]
 			koleksi[N] = temp
 		}
 	}
-	 fmt.Println("Data Berhasil Diurutkan (Ascending)")
-    tampilkanSemuaBuku(koleksi, jumlahBuku)
+
+	fmt.Println()
+	fmt.Println("  Data berhasil diurutkan Ascending!")
+	fmt.Println()
+	tampilkanSemuaBuku(koleksi, jumlahBuku)
 }
 
 func insertionSortTahunTerbit(koleksi *tabBuku, jumlahBuku *int) {
 	var pass, i int
-    var temp Buku
-    pass = 1
-    for pass < *jumlahBuku {
-        i = pass
-        temp = koleksi[pass]
-        for i > 0 && temp.tahunTerbit > koleksi[i-1].tahunTerbit { // ← > bukan 
-            koleksi[i] = koleksi[i-1]
-            i = i - 1
-        }
-        koleksi[i] = temp
-        pass = pass + 1
-    }
-    fmt.Println("Data Berhasil Diurutkan (Descending)")
-    tampilkanSemuaBuku(koleksi, jumlahBuku)
+	var temp Buku
+
+	fmt.Println("╔══════════════════════════════════╗")
+	fmt.Println("║  Urutkan Tahun: 2024 -> 2000     ║")
+	fmt.Println("╚══════════════════════════════════╝")
+
+	pass = 1
+	for pass < *jumlahBuku {
+		i = pass
+		temp = koleksi[pass]
+		for i > 0 && temp.tahunTerbit > koleksi[i-1].tahunTerbit {
+			koleksi[i] = koleksi[i-1]
+			i = i - 1
+		}
+		koleksi[i] = temp
+		pass = pass + 1
+	}
+
+	fmt.Println()
+	fmt.Println("  Data berhasil diurutkan Descending!")
+	fmt.Println()
+	tampilkanSemuaBuku(koleksi, jumlahBuku)
 }
 
 func statistik(koleksi *tabBuku, jumlahBuku *int) {
-    var i, j int
-    var totalTersedia int
-    var kategoriList [NMAX]string
-    var kategoriCount [NMAX]int
-    var jumlahKategori int
-    var ketemu bool
+	var i, j int
+	var totalTersedia int
+	var kategoriList [NMAX]string
+	var kategoriCount [NMAX]int
+	var jumlahKategori int
+	var found bool
 
-    if *jumlahBuku == 0 {
-        fmt.Println("Belum ada buku dalam koleksi.")
-        return
-    }
+	fmt.Println("╔══════════════════════════════════╗")
+	fmt.Println("║       Statistik SiPerpus         ║")
+	fmt.Println("╚══════════════════════════════════╝")
 
-    for i = 0; i < *jumlahBuku; i++ {
-        if koleksi[i].status == "Tersedia" {
-            totalTersedia++
-        }
+	if *jumlahBuku == 0 {
+		fmt.Println()
+		fmt.Println("  Buku tidak ditemukan!")
+		fmt.Println()
+		fmt.Print("  Tekan Enter untuk kembali ke menu...")
+		bacaInput()
+		return
+	}
 
-        ketemu = false
-        for j = 0; j < jumlahKategori; j++ {
-            if kategoriList[j] == koleksi[i].kategori {
-                kategoriCount[j]++
-                ketemu = true
-                break
-            }
-        }
-        if !ketemu {
-            kategoriList[jumlahKategori] = koleksi[i].kategori
-            kategoriCount[jumlahKategori] = 1
-            jumlahKategori++
-        }
-    }
+	for i = 0; i < *jumlahBuku; i++ {
+		if koleksi[i].status == "Tersedia" {
+			totalTersedia++
+		}
+		found = false
+		for j = 0; j < jumlahKategori; j++ {
+			if kategoriList[j] == koleksi[i].kategori {
+				kategoriCount[j]++
+				found = true
+				break
+			}
+		}
+		if !found {
+			kategoriList[jumlahKategori] = koleksi[i].kategori
+			kategoriCount[jumlahKategori] = 1
+			jumlahKategori++
+		}
+	}
 
-    fmt.Println("---------- Statistik PerpusKu ----------")
-    fmt.Printf("Total Koleksi Buku : %d\n", *jumlahBuku)
-    fmt.Printf("Total Tersedia     : %d\n", totalTersedia)
-    fmt.Printf("Total Tidak Tersedia: %d\n", *jumlahBuku - totalTersedia)
-    fmt.Println("-------------------------------")
-    fmt.Println("Jumlah Buku per Kategori:")
-    for i = 0; i < jumlahKategori; i++ {
-        fmt.Printf("  %-20s : %d buku\n", kategoriList[i], kategoriCount[i])
-    }
-    fmt.Println("===============================")
+	fmt.Println()
+	fmt.Println("  +----------------------------------+")
+	fmt.Println("  |       Ringkasan Koleksi          |")
+	fmt.Println("  +----------------------------------+")
+	fmt.Printf("  | Total Buku        : %-12d |\n", *jumlahBuku)
+	fmt.Printf("  | Tersedia          : %-12d |\n", totalTersedia)
+	fmt.Printf("  | Tidak Tersedia    : %-12d |\n", *jumlahBuku-totalTersedia)
+	fmt.Println("  +----------------------------------+")
+	fmt.Println("  |      Buku per Kategori           |")
+	fmt.Println("  +----------------------------------+")
+	for i = 0; i < jumlahKategori; i++ {
+		fmt.Printf("  | %-17s : %-12d |\n", kategoriList[i], kategoriCount[i])
+	}
+	fmt.Println("  +----------------------------------+")
+	fmt.Println()
+	fmt.Print("  Tekan Enter untuk kembali ke menu...")
+	bacaInput()
 }
