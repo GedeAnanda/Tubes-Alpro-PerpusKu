@@ -210,6 +210,7 @@ func tampilkanSemuaBuku(koleksi *tabBuku, jumlahBuku *int) {
 	bacaInput()
 }
 
+
 func ubahBuku(koleksi *tabBuku, jumlahBuku *int) {
 	var id string
 	var idx, i int
@@ -265,6 +266,7 @@ func ubahBuku(koleksi *tabBuku, jumlahBuku *int) {
 	bacaInput()
 }
 
+// Sequential sEARCH
 func hapusBuku(koleksi *tabBuku, jumlahBuku *int) {
 	var id string
 	var idx, i int
@@ -318,9 +320,10 @@ func hapusBuku(koleksi *tabBuku, jumlahBuku *int) {
 	bacaInput()
 }
 
+
 func searchJudul(koleksi *tabBuku, jumlahBuku *int) {
 	var i int
-	var found bool
+	var headerSudahDiprint bool
 	var find string
 
 	fmt.Println("\n╔══════════════════════════════════════════════╗")
@@ -331,7 +334,7 @@ func searchJudul(koleksi *tabBuku, jumlahBuku *int) {
 
 	for i = 0; i < *jumlahBuku; i++ {
 		if strings.ToLower(koleksi[i].judul) == strings.ToLower(find) {
-			if !found {
+			if !headerSudahDiprint {
 				fmt.Println("\n  +--------------------------------------------+")
 				fmt.Println("  |             🎉 Buku Ditemukan!             |")
 				fmt.Println("  +--------------------------------------------+")
@@ -343,11 +346,11 @@ func searchJudul(koleksi *tabBuku, jumlahBuku *int) {
 			fmt.Printf("  | 📅 Tahun   : %-27d |\n", koleksi[i].tahunTerbit)
 			fmt.Printf("  | 📌 Status  : %-27s |\n", koleksi[i].status)
 			fmt.Println("  +--------------------------------------------+\n")
-			found = true
+			headerSudahDiprint = true
 		}
 	}
 
-	if !found {
+	if !headerSudahDiprint {
 		fmt.Println("\n  ❌ Buku tidak ditemukan dalam sistem!")
 	}
 	fmt.Print("\n  🔙 Tekan Enter untuk kembali ke menu...")
@@ -404,7 +407,7 @@ func sortById(koleksi *tabBuku, jumlahBuku *int) {
 	var i, minIdx, N int
 	var temp Buku
 
-	for N = 0; N < *jumlahBuku-1; N++ {
+	for N = 0; N < *jumlahBuku-1; N++ {	
 		minIdx = N
 		for i = N + 1; i < *jumlahBuku; i++ {
 			if strings.ToLower(koleksi[i].id) < strings.ToLower(koleksi[minIdx].id) {
